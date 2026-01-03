@@ -259,6 +259,7 @@ a:hover {
   box-shadow: var(--shadow-md);
   padding: var(--spacing-xl);
   transition: all var(--transition-normal);
+  color: var(--color-gray-900);
 }
 
 .card:hover {
