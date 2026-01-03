@@ -25,8 +25,8 @@ export default function ContactPage() {
         <div className="container">
           <div className="contact-grid">
             {/* Address */}
+            {/* Address */}
             <div className="card contact-card">
-              <div className="contact-icon">📍</div>
               <h3>Adresse</h3>
               <address>
                 <p><strong>{businessConfig.name}</strong></p>
@@ -46,8 +46,8 @@ export default function ContactPage() {
             </div>
 
             {/* Phone */}
+            {/* Phone */}
             <div className="card contact-card">
-              <div className="contact-icon">📞</div>
               <h3>Telefon</h3>
               <p>
                 <a href={`tel:${businessConfig.phone.replace(/\s/g, '')}`} className="contact-link">
@@ -60,8 +60,8 @@ export default function ContactPage() {
             </div>
 
             {/* Email */}
+            {/* Email */}
             <div className="card contact-card">
-              <div className="contact-icon">✉️</div>
               <h3>E-Mail</h3>
               <p>
                 <a href={`mailto:${businessConfig.email}`} className="contact-link">

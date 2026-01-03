@@ -96,7 +96,7 @@ export default function PricingPage() {
                                 </li>
                                 <li>
                                     <span className="pricing-check">✓</span>
-                                    Hosting und Domain inklusive
+                                    Deployment inklusive, Domain separat
                                 </li>
                                 <li>
                                     <span className="pricing-check">✓</span>
@@ -164,7 +164,7 @@ export default function PricingPage() {
                                     <td className="check">✓</td>
                                 </tr>
                                 <tr>
-                                    <td>Hosting inklusive</td>
+                                    <td>Deployment inklusive</td>
                                     <td className="dash">—</td>
                                     <td className="check">✓</td>
                                 </tr>
