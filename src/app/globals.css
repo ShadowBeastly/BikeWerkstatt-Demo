@@ -1067,6 +1067,69 @@ a:hover {
   opacity: 0.8;
 }
 
+/* New cleaner date list */
+.date-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .date-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .date-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.date-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: white;
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.date-list-item:hover {
+  border-color: var(--color-primary-400);
+  background: var(--color-primary-50);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.date-list-item-selected {
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.date-list-item-selected:hover {
+  background: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+}
+
+.date-list-weekday {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.date-list-date {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
 .customer-form {
   max-width: 500px;
   margin: 0 auto;

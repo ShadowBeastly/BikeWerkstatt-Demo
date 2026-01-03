@@ -201,27 +201,35 @@ export default function BookingPage() {
 
                             {/* Today Shortcut */}
                             {isBusinessDay(getToday()) && (
-                                <button
-                                    className="btn btn-accent mb-3"
-                                    onClick={() => handleSelectDate(getToday())}
-                                >
-                                    📅 Heute ({formatDateShort(getToday())})
-                                </button>
+                                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                                    <button
+                                        className="btn btn-accent"
+                                        onClick={() => handleSelectDate(getToday())}
+                                    >
+                                        📅 Heute ({formatDateShort(getToday())})
+                                    </button>
+                                </div>
                             )}
 
-                            <div className="date-grid">
-                                {availableDates.slice(0, 21).map((date) => (
-                                    <button
-                                        key={date}
-                                        className={`date-card ${selectedDate === date ? 'date-card-selected' : ''}`}
-                                        onClick={() => handleSelectDate(date)}
-                                    >
-                                        <span className="date-day">{new Date(date).getDate()}</span>
-                                        <span className="date-weekday">
-                                            {['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][new Date(date).getDay()]}
-                                        </span>
-                                    </button>
-                                ))}
+                            {/* Clean date list */}
+                            <div className="date-list">
+                                {availableDates.slice(0, 21).map((date) => {
+                                    const d = new Date(date);
+                                    const day = d.getDate();
+                                    const weekday = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'][d.getDay()];
+                                    const month = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'][d.getMonth()];
+
+                                    return (
+                                        <button
+                                            key={date}
+                                            className={`date-list-item ${selectedDate === date ? 'date-list-item-selected' : ''}`}
+                                            onClick={() => handleSelectDate(date)}
+                                        >
+                                            <span className="date-list-weekday">{weekday}</span>
+                                            <span className="date-list-date">{day}. {month}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
 
                             {availableDates.length > 21 && (
