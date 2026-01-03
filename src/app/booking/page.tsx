@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import Calendar from '@/components/Calendar';
 import { AppointmentType, CustomerData, TimeSlot } from '@/types';
 import { appointmentTypes, bookingRules, businessConfig } from '@/config/appConfig';
 import { generateTimeSlots } from '@/lib/slots';
@@ -211,32 +212,15 @@ export default function BookingPage() {
                                 </div>
                             )}
 
-                            {/* Clean date list */}
-                            <div className="date-list">
-                                {availableDates.slice(0, 21).map((date) => {
-                                    const d = new Date(date);
-                                    const day = d.getDate();
-                                    const weekday = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'][d.getDay()];
-                                    const month = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'][d.getMonth()];
+                            <Calendar
+                                selectedDate={selectedDate}
+                                onSelectDate={handleSelectDate}
+                                availableDates={availableDates}
+                            />
 
-                                    return (
-                                        <button
-                                            key={date}
-                                            className={`date-list-item ${selectedDate === date ? 'date-list-item-selected' : ''}`}
-                                            onClick={() => handleSelectDate(date)}
-                                        >
-                                            <span className="date-list-weekday">{weekday}</span>
-                                            <span className="date-list-date">{day}. {month}</span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-
-                            {availableDates.length > 21 && (
-                                <p className="text-muted text-center mt-2">
-                                    Weitere Termine verfügbar. Maximal {bookingRules.maxDaysAhead} Tage im Voraus buchbar.
-                                </p>
-                            )}
+                            <p className="text-muted text-center mt-3">
+                                Maximal {bookingRules.maxDaysAhead} Tage im Voraus buchbar.
+                            </p>
                         </div>
                     )}
 
@@ -248,176 +232,162 @@ export default function BookingPage() {
                             </button>
                             <h2 className="step-title">Wählen Sie eine Uhrzeit</h2>
                             <p className="step-subtitle">
-                                {selectedType?.name} am {selectedDate && formatDateLong(selectedDate)}
+                                am {selectedDate ? formatDateLong(selectedDate) : ''}
                             </p>
 
-                            {getFieldError(errors, 'time') && (
-                                <div className="alert alert-error">{getFieldError(errors, 'time')}</div>
-                            )}
-
                             {availableSlots.length > 0 ? (
-                                <div className="slot-grid">
-                                    {timeSlots.map((slot) => (
+                                <div className="time-grid">
+                                    {availableSlots.map((slot) => (
                                         <button
                                             key={slot.time}
-                                            className={`slot ${slot.available ? 'slot-available' : 'slot-unavailable'} ${selectedTime === slot.time ? 'slot-selected' : ''}`}
-                                            onClick={() => slot.available && handleSelectTime(slot.time)}
-                                            disabled={!slot.available}
+                                            className="time-card"
+                                            onClick={() => handleSelectTime(slot.time)}
                                         >
-                                            {slot.time}
+                                            {slot.time} Uhr
                                         </button>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="alert alert-warning">
-                                    Für diesen Tag sind leider keine freien Termine mehr verfügbar.
-                                    Bitte wählen Sie einen anderen Tag.
+                                <div className="text-center p-4">
+                                    <p className="text-muted mb-3">Keine Termine an diesem Tag verfügbar.</p>
+                                    <button
+                                        className="btn btn-outline"
+                                        onClick={() => setStep(2)}
+                                    >
+                                        Anderes Datum wählen
+                                    </button>
                                 </div>
                             )}
                         </div>
                     )}
 
-                    {/* Step 4: Customer Data */}
+                    {/* Step 4: Enter Details */}
                     {step === 4 && (
                         <div className="booking-step animate-slideUp">
                             <button className="btn btn-ghost mb-3" onClick={goBack}>
                                 ← Zurück
                             </button>
-                            <h2 className="step-title">Ihre Kontaktdaten</h2>
+                            <h2 className="step-title">Ihre Daten</h2>
                             <p className="step-subtitle">
-                                {selectedType?.name} am {selectedDate && formatDateLong(selectedDate)} um {selectedTime} Uhr
+                                {selectedType?.name} am {selectedDate ? formatDateShort(selectedDate) : ''} um {selectedTime} Uhr
                             </p>
 
                             <div className="customer-form">
-                                <div className="form-group">
-                                    <label className="form-label">Name *</label>
-                                    <input
-                                        type="text"
-                                        className={`form-input ${getFieldError(errors, 'name') ? 'form-input-error' : ''}`}
-                                        placeholder="Ihr vollständiger Name"
-                                        value={customerData.name}
-                                        onChange={(e) => handleCustomerDataChange('name', e.target.value)}
-                                    />
-                                    {getFieldError(errors, 'name') && (
-                                        <p className="form-error">{getFieldError(errors, 'name')}</p>
-                                    )}
-                                </div>
-
-                                <div className="form-group">
-                                    <label className="form-label">Telefon *</label>
-                                    <input
-                                        type="tel"
-                                        className={`form-input ${getFieldError(errors, 'phone') ? 'form-input-error' : ''}`}
-                                        placeholder="Ihre Telefonnummer"
-                                        value={customerData.phone}
-                                        onChange={(e) => handleCustomerDataChange('phone', e.target.value)}
-                                    />
-                                    {getFieldError(errors, 'phone') && (
-                                        <p className="form-error">{getFieldError(errors, 'phone')}</p>
-                                    )}
-                                </div>
-
-                                <div className="form-group">
-                                    <label className="form-label">E-Mail (optional)</label>
-                                    <input
-                                        type="email"
-                                        className={`form-input ${getFieldError(errors, 'email') ? 'form-input-error' : ''}`}
-                                        placeholder="ihre@email.de"
-                                        value={customerData.email}
-                                        onChange={(e) => handleCustomerDataChange('email', e.target.value)}
-                                    />
-                                    {getFieldError(errors, 'email') && (
-                                        <p className="form-error">{getFieldError(errors, 'email')}</p>
-                                    )}
-                                </div>
-
-                                <div className="form-group">
-                                    <label className="form-label">Anmerkungen (optional)</label>
-                                    <textarea
-                                        className="form-input form-textarea"
-                                        placeholder="z.B. Art des Fahrrads, spezielles Problem..."
-                                        value={customerData.notes}
-                                        onChange={(e) => handleCustomerDataChange('notes', e.target.value)}
-                                    />
-                                </div>
-
-                                {getFieldError(errors, 'submit') && (
-                                    <div className="alert alert-error">{getFieldError(errors, 'submit')}</div>
+                                {errors.find(e => e.field === 'submit') && (
+                                    <div className="alert alert-error mb-4">
+                                        {errors.find(e => e.field === 'submit')?.message}
+                                    </div>
+                                )}
+                                {errors.find(e => e.field === 'time') && (
+                                    <div className="alert alert-warning mb-4">
+                                        {errors.find(e => e.field === 'time')?.message}
+                                    </div>
                                 )}
 
+                                <div className="form-group">
+                                    <label htmlFor="name" className="form-label">Name *</label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        className={`form-input ${getFieldError(errors, 'name') ? 'form-input-error' : ''}`}
+                                        value={customerData.name}
+                                        onChange={(e) => handleCustomerDataChange('name', e.target.value)}
+                                        placeholder="Ihr Vor- und Nachname"
+                                    />
+                                    {getFieldError(errors, 'name') && <span className="error-message">{getFieldError(errors, 'name')}</span>}
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="email" className="form-label">E-Mail *</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        className={`form-input ${getFieldError(errors, 'email') ? 'form-input-error' : ''}`}
+                                        value={customerData.email}
+                                        onChange={(e) => handleCustomerDataChange('email', e.target.value)}
+                                        placeholder="ihre.email@example.com"
+                                    />
+                                    {getFieldError(errors, 'email') && <span className="error-message">{getFieldError(errors, 'email')}</span>}
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="phone" className="form-label">Telefonnummer *</label>
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        className={`form-input ${getFieldError(errors, 'phone') ? 'form-input-error' : ''}`}
+                                        value={customerData.phone}
+                                        onChange={(e) => handleCustomerDataChange('phone', e.target.value)}
+                                        placeholder="0123 4567890"
+                                    />
+                                    {getFieldError(errors, 'phone') && <span className="error-message">{getFieldError(errors, 'phone')}</span>}
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="notes" className="form-label">Anmerkungen (optional)</label>
+                                    <textarea
+                                        id="notes"
+                                        className="form-input"
+                                        value={customerData.notes}
+                                        onChange={(e) => handleCustomerDataChange('notes', e.target.value)}
+                                        placeholder="Z.B. Fahrradmodell, Art des Problems..."
+                                        rows={3}
+                                    />
+                                </div>
+
                                 <button
-                                    className="btn btn-primary btn-lg w-full"
+                                    className="btn btn-primary w-full mt-2"
                                     onClick={handleSubmitCustomerData}
                                     disabled={isSubmitting}
                                 >
-                                    {isSubmitting ? 'Wird gesendet...' : 'Termin anfragen'}
+                                    {isSubmitting ? 'Wird gebucht...' : 'Termin buchen'}
                                 </button>
 
                                 <p className="form-note">
-                                    * Pflichtfelder. Mit dem Absenden stimmen Sie unserer{' '}
-                                    <Link href="/datenschutz">Datenschutzerklärung</Link> zu.
+                                    Mit dem Absenden akzeptieren Sie unsere <Link href="/datenschutz">Datenschutzerklärung</Link>.
                                 </p>
                             </div>
                         </div>
                     )}
 
-                    {/* Step 5: Confirmation */}
+                    {/* Step 5: Success */}
                     {step === 5 && (
-                        <div className="booking-step animate-slideUp">
-                            <div className="confirmation-box">
-                                <div className="confirmation-icon">✅</div>
-                                <h2>Terminanfrage gesendet!</h2>
-                                <p className="confirmation-text">
-                                    Vielen Dank für Ihre Buchung. Wir werden uns in Kürze bei Ihnen melden,
-                                    um den Termin zu bestätigen.
-                                </p>
+                        <div className="booking-step animate-slideUp text-center">
+                            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
+                            <h2 className="step-title">Termin erfolgreich angefragt!</h2>
+                            <p className="step-subtitle">
+                                Vielen Dank, {customerData.name}.<br />
+                                Wir haben Ihre Anfrage erhalten.
+                            </p>
 
-                                <div className="confirmation-details">
-                                    <div className="confirmation-row">
-                                        <span className="confirmation-label">Terminart:</span>
-                                        <span className="confirmation-value">{selectedType?.name}</span>
-                                    </div>
-                                    <div className="confirmation-row">
-                                        <span className="confirmation-label">Datum:</span>
-                                        <span className="confirmation-value">{selectedDate && formatDateLong(selectedDate)}</span>
-                                    </div>
-                                    <div className="confirmation-row">
-                                        <span className="confirmation-label">Uhrzeit:</span>
-                                        <span className="confirmation-value">{selectedTime} Uhr</span>
-                                    </div>
-                                    <div className="confirmation-row">
-                                        <span className="confirmation-label">Dauer:</span>
-                                        <span className="confirmation-value">{selectedType?.durationMinutes} Minuten</span>
-                                    </div>
-                                    <div className="confirmation-row">
-                                        <span className="confirmation-label">Name:</span>
-                                        <span className="confirmation-value">{customerData.name}</span>
-                                    </div>
-                                    <div className="confirmation-row">
-                                        <span className="confirmation-label">Telefon:</span>
-                                        <span className="confirmation-value">{customerData.phone}</span>
-                                    </div>
-                                    {customerData.email && (
-                                        <div className="confirmation-row">
-                                            <span className="confirmation-label">E-Mail:</span>
-                                            <span className="confirmation-value">{customerData.email}</span>
-                                        </div>
-                                    )}
-                                </div>
+                            <div className="card mb-4 text-left inline-block w-full max-w-md">
+                                <h3 className="text-lg font-bold mb-2 border-b pb-2">Termindetails</h3>
+                                <div className="grid grid-2 gap-2">
+                                    <div className="text-muted">Was:</div>
+                                    <div className="font-medium">{selectedType?.name}</div>
 
-                                <div className="confirmation-note">
-                                    <p>📍 {businessConfig.address}, {businessConfig.city}</p>
-                                    <p>📞 Bei Fragen erreichen Sie uns unter {businessConfig.phone}</p>
-                                </div>
+                                    <div className="text-muted">Wann:</div>
+                                    <div className="font-medium">
+                                        {selectedDate ? formatDateLong(selectedDate) : ''}, {selectedTime} Uhr
+                                    </div>
 
-                                <div className="confirmation-actions">
-                                    <button className="btn btn-primary" onClick={resetBooking}>
-                                        Weiteren Termin buchen
-                                    </button>
-                                    <Link href="/" className="btn btn-secondary">
-                                        Zur Startseite
-                                    </Link>
+                                    <div className="text-muted">Wo:</div>
+                                    <div className="font-medium">
+                                        BikeWerkstatt Demo<br />
+                                        Musterstraße 123
+                                    </div>
                                 </div>
+                                {bookingId && (
+                                    <div className="mt-4 pt-2 border-t text-sm text-center text-muted">
+                                        Buchungs-ID: {bookingId.slice(0, 8)}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div>
+                                <button className="btn btn-primary" onClick={resetBooking}>
+                                    Zur Startseite
+                                </button>
                             </div>
                         </div>
                     )}
