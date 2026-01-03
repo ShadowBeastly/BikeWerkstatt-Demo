@@ -1099,6 +1099,7 @@ a:hover {
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: left;
+  color: var(--color-gray-900);
 }
 
 .date-list-item:hover {
