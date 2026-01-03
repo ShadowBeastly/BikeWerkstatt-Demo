@@ -106,209 +106,201 @@ export default function AdminPage() {
   // PIN Gate
   if (!isAuthenticated) {
     return (
-      <>
-        <section className="page-header" style={{ background: 'linear-gradient(135deg, var(--color-gray-700) 0%, var(--color-gray-900) 100%)' }}>
-          <div className="container">
-            <h1>Admin-Bereich</h1>
-          </div>
-        </section>
+      <div className="pin-gate-wrapper">
+        <div className="pin-card">
+          <div className="pin-icon-wrapper">🔐</div>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: 'var(--color-gray-900)' }}>Zugang geschützt</h2>
+          <p style={{ color: 'var(--color-gray-500)', marginBottom: '2rem' }}>Bitte geben Sie den Admin-PIN ein</p>
 
-        <section className="section">
-          <div className="container">
-            <div className="pin-gate">
-              <div className="pin-icon">🔐</div>
-              <h2>Zugang geschützt</h2>
-              <p>Bitte geben Sie den Admin-PIN ein:</p>
+          <form onSubmit={handlePinSubmit}>
+            <input
+              type="password"
+              className={`form-input pin-input ${pinError ? 'form-input-error' : ''}`}
+              placeholder="PIN eingeben"
+              value={pin}
+              onChange={(e) => {
+                setPin(e.target.value);
+                setPinError('');
+              }}
+              maxLength={6}
+              autoFocus
+              style={{ textAlign: 'center', fontSize: '1.25rem', letterSpacing: '0.25em', marginBottom: '1rem' }}
+            />
+            {pinError && <p className="form-error" style={{ marginBottom: '1rem' }}>{pinError}</p>}
+            <button type="submit" className="btn btn-primary w-full btn-lg">
+              Anmelden
+            </button>
+          </form>
 
-              <form onSubmit={handlePinSubmit} className="pin-form">
-                <input
-                  type="password"
-                  className={`form-input pin-input ${pinError ? 'form-input-error' : ''}`}
-                  placeholder="PIN eingeben"
-                  value={pin}
-                  onChange={(e) => {
-                    setPin(e.target.value);
-                    setPinError('');
-                  }}
-                  maxLength={6}
-                  autoFocus
-                />
-                {pinError && <p className="form-error">{pinError}</p>}
-                <button type="submit" className="btn btn-primary w-full">
-                  Anmelden
-                </button>
-              </form>
-
-              <p className="pin-hint">
-                Demo-PIN: <code>1234</code>
-              </p>
-            </div>
-          </div>
-        </section>
-      </>
+          <p className="pin-hint" style={{ marginTop: '2rem', color: 'var(--color-gray-400)', fontSize: '0.875rem' }}>
+            Demo-PIN: <code>1234</code>
+          </p>
+        </div>
+      </div>
     );
   }
 
   // Admin Dashboard
   return (
-    <>
-      <section className="admin-header">
+    <div style={{ background: 'var(--color-gray-50)', minHeight: '100vh', paddingBottom: '4rem' }}>
+      <header className="admin-header">
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h1>Admin-Bereich</h1>
+              <h1>Admin-Dashboard</h1>
               <p>{businessConfig.name}</p>
             </div>
-            <button className="btn btn-ghost" onClick={handleLogout}>
+            <button className="btn btn-secondary btn-sm" onClick={handleLogout}>
               Abmelden
             </button>
           </div>
         </div>
-      </section>
+      </header>
 
-      <section className="section">
-        <div className="container">
-          {/* Stats */}
-          <div className="stats-grid">
-            <div className="stat-card">
-              <span className="stat-number">{bookings.length}</span>
-              <span className="stat-label">Gesamt</span>
-            </div>
-            <div className="stat-card stat-requested">
-              <span className="stat-number">
-                {bookings.filter(b => b.status === 'requested').length}
-              </span>
-              <span className="stat-label">Angefragt</span>
-            </div>
-            <div className="stat-card stat-confirmed">
-              <span className="stat-number">
-                {bookings.filter(b => b.status === 'confirmed').length}
-              </span>
-              <span className="stat-label">Bestätigt</span>
-            </div>
-            <div className="stat-card stat-canceled">
-              <span className="stat-number">
-                {bookings.filter(b => b.status === 'canceled').length}
-              </span>
-              <span className="stat-label">Storniert</span>
-            </div>
+      <div className="container">
+        {/* Stats */}
+        <div className="stats-grid">
+          <div className="stat-card">
+            <span className="stat-number">{bookings.length}</span>
+            <span className="stat-label">Gesamt</span>
+          </div>
+          <div className="stat-card stat-requested">
+            <span className="stat-number">
+              {bookings.filter(b => b.status === 'requested').length}
+            </span>
+            <span className="stat-label">Offen</span>
+          </div>
+          <div className="stat-card stat-success">
+            <span className="stat-number">
+              {bookings.filter(b => b.status === 'confirmed').length}
+            </span>
+            <span className="stat-label">Bestätigt</span>
+          </div>
+          <div className="stat-card stat-danger">
+            <span className="stat-number">
+              {bookings.filter(b => b.status === 'canceled').length}
+            </span>
+            <span className="stat-label">Storniert</span>
+          </div>
+        </div>
+
+        {/* Action Toolbar */}
+        <div className="admin-toolbar">
+          <div className="toolbar-group">
+            <span style={{ fontWeight: 600, color: 'var(--color-gray-700)' }}>Filter:</span>
+            <select
+              className="form-input"
+              style={{ padding: '0.5rem', width: 'auto' }}
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as StatusFilter)}
+            >
+              <option value="all">Alle Buchungen</option>
+              <option value="requested">Nur Offene</option>
+              <option value="confirmed">Nur Bestätigte</option>
+              <option value="canceled">Nur Stornierte</option>
+            </select>
           </div>
 
-          {/* Actions */}
-          <div className="admin-actions">
-            <div className="filter-group">
-              <label>Filter:</label>
-              <select
-                className="form-input filter-select"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value as StatusFilter)}
-              >
-                <option value="all">Alle anzeigen</option>
-                <option value="requested">Angefragt</option>
-                <option value="confirmed">Bestätigt</option>
-                <option value="canceled">Storniert</option>
-              </select>
-            </div>
+          <div className="toolbar-group">
+            <button className="btn btn-secondary btn-sm" onClick={handleExport}>
+              📥 Export CSV
+            </button>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => setResetConfirm(true)}
+              style={{ color: 'var(--color-error)' }}
+            >
+              🗑️ Reset
+            </button>
+          </div>
+        </div>
 
-            <div className="action-buttons">
-              <button className="btn btn-secondary btn-sm" onClick={handleExport}>
-                📥 CSV exportieren
+        {/* Reset Confirmation */}
+        {resetConfirm && (
+          <div className="alert alert-warning" style={{ marginBottom: '1.5rem' }}>
+            <strong>Warnung:</strong> Möchten Sie wirklich alle Demo-Daten löschen?
+            <div className="alert-actions">
+              <button className="btn btn-danger btn-sm" onClick={handleReset}>
+                Ja, alles löschen
               </button>
-              <button
-                className="btn btn-ghost btn-sm"
-                onClick={() => setResetConfirm(true)}
-              >
-                🗑️ Demo zurücksetzen
+              <button className="btn btn-ghost btn-sm" onClick={() => setResetConfirm(false)}>
+                Abbrechen
               </button>
             </div>
           </div>
+        )}
 
-          {/* Reset Confirmation */}
-          {resetConfirm && (
-            <div className="alert alert-warning">
-              <strong>Alle Buchungen löschen?</strong> Diese Aktion kann nicht rückgängig gemacht werden.
-              <div className="alert-actions">
-                <button className="btn btn-danger btn-sm" onClick={handleReset}>
-                  Ja, alle löschen
-                </button>
-                <button className="btn btn-ghost btn-sm" onClick={() => setResetConfirm(false)}>
-                  Abbrechen
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Bookings Table */}
-          {filteredBookings.length > 0 ? (
+        {/* Bookings Table */}
+        {filteredBookings.length > 0 ? (
+          <div className="admin-table-container">
             <div className="table-container">
-              <table className="table">
+              <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Datum</th>
-                    <th>Uhrzeit</th>
-                    <th>Terminart</th>
+                    <th>Datum & Zeit</th>
+                    <th>Leistung</th>
                     <th>Kunde</th>
-                    <th>Telefon</th>
+                    <th>Kontakt</th>
                     <th>Status</th>
-                    <th>Aktionen</th>
+                    <th style={{ textAlign: 'right' }}>Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredBookings.map((booking) => (
                     <tr key={booking.id}>
-                      <td>{formatDateShort(booking.date)}</td>
-                      <td>{booking.time} Uhr</td>
                       <td>
-                        <span style={{ whiteSpace: 'nowrap' }}>
-                          {booking.appointmentType.icon} {booking.appointmentType.name}
-                        </span>
+                        <div style={{ fontWeight: 600 }}>{formatDateShort(booking.date)}</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--color-gray-500)' }}>{booking.time} Uhr</div>
                       </td>
                       <td>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span style={{ fontWeight: 600 }}>{booking.customer.name}</span>
-                          {booking.customer.email && (
-                            <span style={{ fontSize: '0.75rem', color: 'var(--color-gray-500)' }}>{booking.customer.email}</span>
-                          )}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '1.25rem' }}>{booking.appointmentType.icon}</span>
+                          <span>{booking.appointmentType.name}</span>
                         </div>
                       </td>
                       <td>
-                        <a href={`tel:${booking.customer.phone}`} style={{ color: 'var(--color-primary-600)', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontWeight: 600 }}>{booking.customer.name}</div>
+                        {booking.customer.notes && (
+                          <div style={{ fontSize: '0.75rem', color: 'var(--color-gray-500)', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            📝 {booking.customer.notes}
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        <a href={`tel:${booking.customer.phone}`} style={{ display: 'block', color: 'var(--color-primary-600)' }}>
                           {booking.customer.phone}
                         </a>
+                        {booking.customer.email && (
+                          <span style={{ fontSize: '0.8rem', color: 'var(--color-gray-500)' }}>{booking.customer.email}</span>
+                        )}
                       </td>
                       <td>{getStatusBadge(booking.status)}</td>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                           <select
-                            style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', border: '1px solid var(--color-gray-200)', borderRadius: 'var(--radius-sm)', background: 'white' }}
+                            style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem', border: '1px solid var(--color-gray-200)', borderRadius: 'var(--radius-md)', background: 'white' }}
                             value={booking.status}
                             onChange={(e) => handleStatusChange(booking.id, e.target.value as BookingStatus)}
                           >
-                            <option value="requested">Angefragt</option>
+                            <option value="requested">Offen</option>
                             <option value="confirmed">Bestätigt</option>
                             <option value="canceled">Storniert</option>
                           </select>
 
                           {deleteConfirm === booking.id ? (
-                            <div style={{ display: 'flex', gap: '0.25rem' }}>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => handleDelete(booking.id)}
-                              >
-                                Löschen
-                              </button>
-                              <button
-                                className="btn btn-ghost btn-sm"
-                                onClick={() => setDeleteConfirm(null)}
-                              >
-                                ✕
-                              </button>
-                            </div>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              style={{ padding: '0.25rem 0.5rem' }}
+                              onClick={() => handleDelete(booking.id)}
+                            >
+                              Löschen?
+                            </button>
                           ) : (
                             <button
                               className="btn btn-ghost btn-sm"
-                              style={{ opacity: 0.5 }}
+                              style={{ padding: '0.25rem 0.5rem', opacity: 0.5 }}
                               onClick={() => setDeleteConfirm(booking.id)}
+                              title="Löschen"
                             >
                               🗑️
                             </button>
@@ -320,76 +312,20 @@ export default function AdminPage() {
                 </tbody>
               </table>
             </div>
-          ) : (
-            <div className="empty-state">
-              <div className="empty-icon">📋</div>
-              <h3>Keine Buchungen gefunden</h3>
-              <p>
-                {filter === 'all'
-                  ? 'Es wurden noch keine Termine gebucht.'
-                  : `Keine Buchungen mit Status "${filter}" vorhanden.`
-                }
-              </p>
-              <Link href="/booking" className="btn btn-primary mt-2">
-                Ersten Termin buchen
-              </Link>
-            </div>
-          )}
-
-          {/* Booking Details (Mobile) */}
-          <div className="mobile-bookings">
-            {filteredBookings.map((booking) => (
-              <div key={booking.id} className="card mobile-booking-card">
-                <div className="mobile-booking-header">
-                  <span className="mobile-booking-type">
-                    {booking.appointmentType.icon} {booking.appointmentType.name}
-                  </span>
-                  {getStatusBadge(booking.status)}
-                </div>
-
-                <div className="mobile-booking-datetime">
-                  {formatDateShort(booking.date)} um {booking.time} Uhr
-                </div>
-
-                <div className="mobile-booking-customer">
-                  <strong>{booking.customer.name}</strong>
-                  <a href={`tel:${booking.customer.phone}`}>{booking.customer.phone}</a>
-                  {booking.customer.email && <span>{booking.customer.email}</span>}
-                </div>
-
-                {booking.customer.notes && (
-                  <div className="mobile-booking-notes">
-                    📝 {booking.customer.notes}
-                  </div>
-                )}
-
-                <div className="mobile-booking-actions">
-                  <select
-                    className="form-input"
-                    value={booking.status}
-                    onChange={(e) => handleStatusChange(booking.id, e.target.value as BookingStatus)}
-                  >
-                    <option value="requested">Angefragt</option>
-                    <option value="confirmed">Bestätigt</option>
-                    <option value="canceled">Storniert</option>
-                  </select>
-
-                  <button
-                    className="btn btn-ghost btn-sm"
-                    onClick={() => {
-                      if (confirm('Buchung wirklich löschen?')) {
-                        handleDelete(booking.id);
-                      }
-                    }}
-                  >
-                    🗑️ Löschen
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
-        </div>
-      </section>
-    </>
+        ) : (
+          <div className="empty-state card" style={{ padding: '4rem 2rem' }}>
+            <div className="empty-icon" style={{ fontSize: '4rem', marginBottom: '1rem', opacity: 0.5 }}>📭</div>
+            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Keine Buchungen gefunden</h3>
+            <p style={{ color: 'var(--color-gray-500)' }}>
+              {filter === 'all'
+                ? 'Es liegen aktuell keine Terminanfragen vor.'
+                : `Keine Buchungen mit dem Status "${filter}".`
+              }
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
