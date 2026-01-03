@@ -132,7 +132,7 @@ export default function AdminPage() {
             </button>
           </form>
 
-          <p className="pin-hint" style={{ marginTop: '2rem', color: 'var(--color-gray-400)', fontSize: '0.875rem' }}>Demo-PIN: <code>1234</code></p>
+          <p className="pin-hint" style={{ marginTop: '2rem', color: 'var(--color-gray-400)', fontSize: '0.875rem' }}>Demo-PIN: 1234</p>
         </div>
       </div>
     );
