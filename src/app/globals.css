@@ -1150,6 +1150,49 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Time Slot Grid */
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .time-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .time-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.time-card {
+  padding: 0.75rem 0.5rem;
+  background: white;
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--color-gray-900);
+  font-weight: 500;
+}
+
+.time-card:hover {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-50);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.session-section {
+  margin-bottom: 2rem;
+}
+
 .confirmation-text {
   color: var(--color-gray-600);
   margin-bottom: 2rem;
