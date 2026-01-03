@@ -236,15 +236,26 @@ export default function BookingPage() {
                             </p>
 
                             {availableSlots.length > 0 ? (
-                                <div className="time-grid">
-                                    {availableSlots.map((slot) => (
-                                        <button
-                                            key={slot.time}
-                                            className="time-card"
-                                            onClick={() => handleSelectTime(slot.time)}
-                                        >
-                                            {slot.time} Uhr
-                                        </button>
+                                <div className="time-slots-container">
+                                    {[
+                                        { label: 'Vormittag', slots: availableSlots.filter(s => parseInt(s.time) < 12) },
+                                        { label: 'Mittag', slots: availableSlots.filter(s => parseInt(s.time) >= 12 && parseInt(s.time) < 14) },
+                                        { label: 'Nachmittag', slots: availableSlots.filter(s => parseInt(s.time) >= 14) }
+                                    ].map(group => group.slots.length > 0 && (
+                                        <div key={group.label} className="time-group mb-4">
+                                            <h3 className="text-sm font-semibold text-gray-500 mb-2 pl-1">{group.label}</h3>
+                                            <div className="time-grid">
+                                                {group.slots.map((slot) => (
+                                                    <button
+                                                        key={slot.time}
+                                                        className="time-card"
+                                                        onClick={() => handleSelectTime(slot.time)}
+                                                    >
+                                                        {slot.time} Uhr
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             ) : (
@@ -357,7 +368,7 @@ export default function BookingPage() {
                             <h2 className="step-title">Termin erfolgreich angefragt!</h2>
                             <p className="step-subtitle">
                                 Vielen Dank, {customerData.name}.<br />
-                                Wir haben Ihre Anfrage erhalten.
+                                Der Termin ist vorgemerkt. Wir bestätigen ihn kurzfristig.
                             </p>
 
                             <div className="card mb-4 text-left inline-block w-full max-w-md">
